@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Positive;
 
 import java.util.List;
 
+/**
+ * Represents a business unit within SafeDispatch.
+ * A department can have many employees assigned to it via Assignment.
+ */
 @Entity
 public class Department {
 
@@ -14,11 +18,11 @@ public class Department {
 
     private String name;
 
-    @Positive
+    @Positive // Hibernate validation - budget must be greater than zero
     private double budget;
 
     private String location;
-
+    // One department can have many assignments
     @OneToMany(mappedBy = "department")
     private List<Assignment> assignments;
 
