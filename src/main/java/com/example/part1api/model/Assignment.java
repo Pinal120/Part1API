@@ -3,6 +3,7 @@ package com.example.part1api.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+// Links an Employee to a Department.
 @Entity
 public class Assignment {
 
@@ -15,11 +16,11 @@ public class Assignment {
     private String accessLevel;
 
     @ManyToOne
-    @NotNull
+    @NotNull // An assignment must always belong to an employee
     private Employee employee;
 
     @ManyToOne
-    @NotNull
+    @NotNull // An assignment must always belong to a department
     private Department department;
 
     // getters and setters

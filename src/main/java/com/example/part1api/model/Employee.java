@@ -2,11 +2,11 @@ package com.example.part1api.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Email;
 
 import java.time.LocalDate;
 import java.util.List;
 
+// Represents a SafeDispatch staff member.
 @Entity
 public class Employee {
 
@@ -16,14 +16,14 @@ public class Employee {
 
     private String name;
 
-    @NotNull
+    @NotNull // Hibernate validation - contractType must be provided
     private String contractType;
 
     private LocalDate startDate;
 
     private double salary;
 
-
+    // One employee can have many department assignment
     @OneToMany(mappedBy = "employee")
     private List<Assignment> assignments;
 
