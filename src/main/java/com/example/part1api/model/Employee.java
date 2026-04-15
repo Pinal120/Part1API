@@ -1,5 +1,6 @@
 package com.example.part1api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -24,6 +25,7 @@ public class Employee {
     private double salary;
 
     // One employee can have many department assignment
+    @JsonIgnore
     @OneToMany(mappedBy = "employee")
     private List<Assignment> assignments;
 
