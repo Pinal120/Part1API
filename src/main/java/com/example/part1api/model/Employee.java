@@ -1,6 +1,9 @@
 package com.example.part1api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -16,6 +19,10 @@ public class Employee {
 
     private String name;
 
+    @Email
+    @NotBlank
+    private String email;
+
     @NotNull // Hibernate validation - contractType must be provided
     private String contractType;
 
@@ -24,6 +31,7 @@ public class Employee {
     private double salary;
 
     // One employee can have many department assignment
+    @JsonIgnore
     @OneToMany(mappedBy = "employee")
     private List<Assignment> assignments;
 
@@ -45,9 +53,11 @@ public class Employee {
         this.name = name;
     }
 
-    public String getContractType() {
-        return contractType;
-    }
+    public String getContractType() {return contractType;}
+
+    public String getEmail() {return email;}
+
+    public void setEmail(String email) {this.email = email;}
 
     public void setContractType(String contractType) {
         this.contractType = contractType;

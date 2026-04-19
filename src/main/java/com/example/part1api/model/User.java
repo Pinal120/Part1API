@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 
 // Represents a system user who can authenticate with the API.
 @Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String username; // Used as login credential
     private String password; // Stored as BCrypt hash
     private String role;     // "HR" or "MANAGER"
