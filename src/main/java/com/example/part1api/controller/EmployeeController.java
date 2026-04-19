@@ -3,6 +3,7 @@ package com.example.part1api.controller;
 import com.example.part1api.dto.EmployeeRequestDTO;
 import com.example.part1api.model.Employee;
 import com.example.part1api.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ public class EmployeeController {
 
     // POST /api/employees — HR RBAC
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody EmployeeRequestDTO dto) {
+    public ResponseEntity<Employee> createEmployee(@Valid @RequestBody EmployeeRequestDTO dto) {
         Employee created = employeeService.createEmployee(dto);
         return ResponseEntity.status(201).body(created);
     }
@@ -43,7 +44,7 @@ public class EmployeeController {
     // PUT /api/employees/{id} — HR RBAXC
     @PutMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id,
-                                                   @RequestBody EmployeeRequestDTO dto) {
+                                                   @Valid @RequestBody EmployeeRequestDTO dto) {
         return employeeService.updateEmployee(id, dto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
