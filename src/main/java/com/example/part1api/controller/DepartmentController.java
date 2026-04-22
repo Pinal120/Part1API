@@ -26,12 +26,8 @@ public class DepartmentController {
 
     // POST /api/departments — RBAC (HR Only), Sec Config
     @PostMapping
-    public ResponseEntity<Object> createDepartment(@RequestBody DepartmentRequestDTO dto) {
-        try {
-            Department created = departmentService.createDepartment(dto);
-            return ResponseEntity.status(201).body(created);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Department> createDepartment(@RequestBody DepartmentRequestDTO dto) {
+        Department created = departmentService.createDepartment(dto);
+        return ResponseEntity.status(201).body(created);
     }
 }

@@ -18,13 +18,9 @@ public class AssignmentController {
 
     // POST /api/assignments, with the sec config for RBAC (HR)
     @PostMapping
-    public ResponseEntity<Object> createAssignment(@RequestBody AssignmentRequestDTO dto) {
-        try {
-            Assignment created = assignmentService.createAssignment(dto);
-            return ResponseEntity.status(201).body(created);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Assignment> createAssignment(@RequestBody AssignmentRequestDTO dto) {
+        Assignment created = assignmentService.createAssignment(dto);
+        return ResponseEntity.status(201).body(created);
     }
 
     // DELETE /api/assignments/{id}, RBAC (HR)
