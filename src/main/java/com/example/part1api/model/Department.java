@@ -1,5 +1,6 @@
 package com.example.part1api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 
@@ -23,6 +24,7 @@ public class Department {
 
     private String location;
     // One department can have many assignments
+    @JsonIgnore
     @OneToMany(mappedBy = "department")
     private List<Assignment> assignments;
 
