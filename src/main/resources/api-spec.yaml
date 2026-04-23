@@ -438,11 +438,16 @@ components:
           type: number
           format: double
           description: Annual salary in the local currency
+        email:
+          type: string
+          format: email
+          description: Work email address of the employee
 
     EmployeeRequest:
       type: object
       required:
         - contractType
+        - email
       properties:
         name:
           type: string
@@ -458,6 +463,10 @@ components:
           type: number
           format: double
           description: Annual salary in the local currency
+        email:
+          type: string
+          format: email
+          description: Valid work email address of the employee
 
     Department:
       type: object
