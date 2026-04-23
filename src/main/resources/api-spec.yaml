@@ -1,0 +1,551 @@
+openapi: 3.0.3
+info:
+  title: API
+  version: 1.0.0
+  description: >
+    REST API for managing employees, departments and assignments
+
+servers:
+  - url: https://localhost:8443/api
+
+security:
+  - basicAuth: []
+
+paths:
+
+  /employees:
+    get:
+      summary: Get all employees
+      description: >
+        Returns a list of all employees. Optionally filter by department name
+        using the ?department query parameter. Accessible by HR and MANAGER roles.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: department
+          in: query
+          required: false
+          description: Filter employees by department name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of employees returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks required role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new employee
+      description: Creates a new employee record. Accessible by HR role only.
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+      responses:
+        '201':
+          description: Employee created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          description: Bad request - validation error in request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks HR role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /employees/{id}:
+    get:
+      summary: Get employee by ID
+      description: Returns a single employee by their ID. Accessible by HR and MANAGER roles.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Numeric ID of the employee
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Employee found and returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          description: Employee not found with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks required role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update an existing employee
+      description: Replaces all fields of the specified employee. Accessible by HR role only.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Numeric ID of the employee to update
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+      responses:
+        '200':
+          description: Employee updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          description: Bad request - validation error in request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee not found with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks HR role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete an employee
+      description: Permanently removes the specified employee. Accessible by HR role only.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Numeric ID of the employee to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Employee deleted successfully - no content returned
+        '404':
+          description: Employee not found with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks HR role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /employees/{id}/promote:
+    put:
+      summary: Promote an employee
+      description: >
+        Applies a 10% salary increase to the specified employee.
+        The employee must have been with the company for at least 6 months.
+        Returns 400 if the tenure requirement is not met.
+        Accessible by HR role only.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Numeric ID of the employee to promote
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Employee promoted successfully - updated record returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          description: Bad request - employee has not been with company for 6 months
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee not found with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks HR role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /departments:
+    get:
+      summary: Get all departments
+      description: Returns a list of all departments. Accessible by HR and MANAGER roles.
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: List of departments returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Department'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks required role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new department
+      description: >
+        Creates a new department. Budget must be a positive value.
+        Returns 400 if budget is zero or negative.
+        Accessible by HR role only.
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+      responses:
+        '201':
+          description: Department created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+        '400':
+          description: Bad request - budget is not a positive value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks HR role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /assignments:
+    post:
+      summary: Create a new assignment
+      description: >
+        Assigns an employee to a department with a given role and access level.
+        Both the employee and department must already exist.
+        Returns 400 if either ID is not found.
+        Accessible by HR role only.
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequest'
+      responses:
+        '201':
+          description: Assignment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+        '400':
+          description: Bad request - employee or department not found with the supplied ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks HR role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /assignments/{id}:
+    delete:
+      summary: Delete an assignment
+      description: Removes an employee-department assignment by its ID. Accessible by HR role only.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Numeric ID of the assignment to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Assignment deleted successfully - no content returned
+        '404':
+          description: Assignment not found with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorised - credentials missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - authenticated user lacks HR role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using username and password
+
+  schemas:
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Auto-generated unique identifier
+        name:
+          type: string
+          description: Full name of the employee
+        contractType:
+          type: string
+          description: Employment contract type (e.g. FULL_TIME, PART_TIME, CONTRACT)
+        startDate:
+          type: string
+          format: date
+          description: Date the employee started (ISO 8601 format, e.g. 2023-01-15)
+        salary:
+          type: number
+          format: double
+          description: Annual salary in the local currency
+        email:
+          type: string
+          format: email
+          description: Work email address of the employee
+
+    EmployeeRequest:
+      type: object
+      required:
+        - contractType
+        - email
+      properties:
+        name:
+          type: string
+          description: Full name of the employee
+        contractType:
+          type: string
+          description: Employment contract type - required field
+        startDate:
+          type: string
+          format: date
+          description: Date the employee started (ISO 8601 format, e.g. 2023-01-15)
+        salary:
+          type: number
+          format: double
+          description: Annual salary in the local currency
+        email:
+          type: string
+          format: email
+          description: Valid work email address of the employee
+
+    Department:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Auto-generated unique identifier
+        name:
+          type: string
+          description: Name of the department
+        budget:
+          type: number
+          format: double
+          description: Annual budget allocation - must be a positive value
+        location:
+          type: string
+          description: Physical location or office of the department
+
+    DepartmentRequest:
+      type: object
+      required:
+        - budget
+      properties:
+        name:
+          type: string
+          description: Name of the department
+        budget:
+          type: number
+          format: double
+          description: Annual budget allocation - must be greater than zero
+        location:
+          type: string
+          description: Physical location or office of the department
+
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Auto-generated unique identifier
+        role:
+          type: string
+          description: Job role of the employee within the department
+        accessLevel:
+          type: string
+          description: System access level granted for this assignment (e.g. READ, WRITE, ADMIN)
+        employee:
+          $ref: '#/components/schemas/Employee'
+        department:
+          $ref: '#/components/schemas/Department'
+
+    AssignmentRequest:
+      type: object
+      required:
+        - employeeId
+        - departmentId
+      properties:
+        employeeId:
+          type: integer
+          format: int64
+          description: ID of the employee to assign
+        departmentId:
+          type: integer
+          format: int64
+          description: ID of the department to assign the employee to
+        role:
+          type: string
+          description: Job role within the department
+        accessLevel:
+          type: string
+          description: System access level for this assignment
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Human-readable description of what went wrong
+      example:
+        error: "Employee not found with id: 5"

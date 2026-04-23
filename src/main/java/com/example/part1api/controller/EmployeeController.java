@@ -61,13 +61,9 @@ public class EmployeeController {
 
     // PUT /api/employees/{id}/promote — HR RBAC
     @PutMapping("/{id}/promote")
-    public ResponseEntity<Object> promoteEmployee(@PathVariable Long id) {
-        try {
-            return employeeService.promoteEmployee(id)
-                    .<ResponseEntity<Object>>map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Employee> promoteEmployee(@PathVariable Long id) {
+        return employeeService.promoteEmployee(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
